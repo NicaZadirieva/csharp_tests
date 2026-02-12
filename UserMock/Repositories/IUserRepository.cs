@@ -19,6 +19,6 @@ namespace UserMock.Repositories
         /// </summary>
         /// <param name="user"></param>
         /// <returns>Юзер из хранилища данных</returns>
-        User Save(User user);
+        User Save(string name, string email, int age);
     }
 }

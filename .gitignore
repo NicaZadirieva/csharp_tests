@@ -6,3 +6,4 @@ test_string/obj
 test_string/bin
 UserMock/.vs
 UserMock/obj
+/UserMock/bin/Debug/net10.0

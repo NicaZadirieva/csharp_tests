@@ -6,7 +6,7 @@ using UserMock.Repositories;
 
 namespace UserMock.Services
 {
-    public class UserService: IUserService
+    public class UserService
     {
         private readonly IUserRepository _repo;
 
@@ -24,7 +24,7 @@ namespace UserMock.Services
         public User CreateUser(string name, string email, int age)
         {
             var user = new User(name, email, age);
-            return _repo.Save(user);
+            return _repo.Save(name, email, age);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace UserMock.Repositories
             return users.FirstOrDefault((u) => u?.dbId == id, null);
         }
 
-        public User Save(User user)
+        public User Save(string name, string email, int age)
         {
             int newDbId = 0;
             try
@@ -26,9 +26,9 @@ namespace UserMock.Repositories
                 // список пуст
                 newDbId = 0;
             }
-            user.dbId = newDbId;
-            users.Add(user);
-            return user;
+            var newUser = new User(name, email, age, newDbId);
+            users.Add(newUser);
+            return newUser;
         }
     }
 }
