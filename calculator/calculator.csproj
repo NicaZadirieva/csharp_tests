@@ -18,7 +18,7 @@
   </ItemGroup>
 
 	<PropertyGroup>
-		<StartupObject>calculator.Program</StartupObject>
+		<StartupObject>Program</StartupObject>
 	</PropertyGroup>
 
   <ItemGroup>

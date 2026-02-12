@@ -1,36 +1,28 @@
-﻿
-using calculator.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using calculator.Services;   // ← обязательно!
 
-namespace calculator
+class Program
 {
-    internal class Program
+    static void Main()
     {
-        static void Main()
+        var services = new ServiceCollection();
+
+        services.AddLogging(builder =>
         {
-            // 1. Настраиваем контейнер
-            var services = new ServiceCollection();
-            
+            builder.AddConsole();          // <-- без этого логов не будет
+            builder.SetMinimumLevel(LogLevel.Trace);
+        });
 
-            
-            // 4. Запрашиваем экземпляр CalculatorService<double>
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-                builder.AddDebug();
-            });
+        services.AddTransient(typeof(CalculatorService<>));
 
-            var logger = loggerFactory.CreateLogger<CalculatorService<double>>();
-            var calcService = new CalculatorService<double>(logger); // явная передача
+        var serviceProvider = services.BuildServiceProvider();
 
-            // 5. Используем
-            var sum = calcService.Divide(1, 0);
-            Console.WriteLine(sum);
+        var calc = serviceProvider.GetRequiredService<CalculatorService<double>>();
 
-        }
+        calc.Divide(1, 0);   // здесь должен появиться лог!
+
+        Console.WriteLine("Готово. Нажмите Enter...");
+        Console.ReadLine();
     }
 }

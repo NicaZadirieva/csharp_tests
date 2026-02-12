@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace calculator.Services
 {
-    internal class CalculatorService<T> where T : INumber<T>
+    public class CalculatorService<T> where T : INumber<T>
     {
         private readonly ILogger<CalculatorService<T>> _logger;
 
@@ -22,15 +22,13 @@ namespace calculator.Services
         }
         public T? Divide(T a, T b)
         {
-            try
+            if (b == T.Zero)
             {
-                return a / b;
+                _logger.LogError("b == 0. Нельзя выполнить деление");
+                return default; // T? — вернёт null для ссылочных, default(T) для значимых
             }
-            catch (DivideByZeroException ex)
-            {
-                _logger.LogError("b == 0. Нельзя совершить операцию");
-                return default;
-            }
+
+            return a / b;   // исключения не будет, деление безопасно
         }
     }
 }
