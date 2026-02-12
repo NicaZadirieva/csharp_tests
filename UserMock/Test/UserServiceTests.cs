@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using Moq;
 using System.Xml.Linq;
 using UserMock.Models;
 using UserMock.Repositories;
@@ -20,7 +21,7 @@ namespace UserMock.Test
                     .Returns(new User(name, email, age));
 
             var service = new UserService(mockRepo.Object);
-            Assert.Equal(name, service.GetUserName(1));
+            service.GetUserName(1).Should().Be(name);
             mockRepo.Verify(repo => repo.GetById(1), Times.Once);
         }
 
@@ -37,9 +38,9 @@ namespace UserMock.Test
 
             var service = new UserService(mockRepo.Object);
             var result = service.CreateUser(name, email, age);
-            Assert.Equal(name, result.name);
-            Assert.Equal(email, result.email);
-            Assert.Equal(age, result.age);
+            result.name.Should().Be(name);
+            result.email.Should().Be(email);
+            result.age.Should().Be(age);
             mockRepo.Verify(repo => repo.Save(name, email, age), Times.Once);
         }
 
@@ -48,7 +49,7 @@ namespace UserMock.Test
         {
             var mockRepo = new Mock<IUserRepository>();
             var service = new UserService(mockRepo.Object);
-            Assert.Equal("Unknown", service.GetUserName(1));
+            service.GetUserName(1).Should().Be("Unknown");
             mockRepo.Verify(repo => repo.GetById(1), Times.Once);
         }
     }
