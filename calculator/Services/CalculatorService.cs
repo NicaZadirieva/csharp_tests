@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Numerics;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Xunit.Sdk;
 
 namespace calculator.Services
 {
@@ -20,12 +21,20 @@ namespace calculator.Services
         {
             return a + b;
         }
-        public T? Divide(T a, T b)
+
+        /// <summary>
+        /// Делить a/b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        /// <exception cref="DivideByZeroException"></exception>
+        public T Divide(T a, T b)
         {
             if (b == T.Zero)
             {
                 _logger.LogError("b == 0. Нельзя выполнить деление");
-                return default; // T? — вернёт null для ссылочных, default(T) для значимых
+                throw new DivideByZeroException("b == 0. Нельзя выполнить деление");
             }
 
             return a / b;   // исключения не будет, деление безопасно
