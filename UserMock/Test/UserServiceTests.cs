@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Moq;
-using System.Xml.Linq;
 using UserMock.Models;
 using UserMock.Repositories;
 using UserMock.Services;
@@ -15,13 +14,20 @@ namespace UserMock.Test
         [InlineData("Anton", "anton@gmail.com", 35)]
         public void GetUserName_ShouldReturnValidValues(string name, string email, int age)
         {
+            // Arrange
             var mockRepo = new Mock<IUserRepository>();
-
             mockRepo.Setup(repo => repo.GetById(1))
                     .Returns(new User(name, email, age));
 
             var service = new UserService(mockRepo.Object);
-            service.GetUserName(1).Should().Be(name);
+
+            // Act
+            var result = service.GetUserName(1);
+
+            // Assert
+            result.Should().NotBeNull()
+                  .And.Be(name);                     // проверка имени
+
             mockRepo.Verify(repo => repo.GetById(1), Times.Once);
         }
 
@@ -31,26 +37,40 @@ namespace UserMock.Test
         [InlineData("Anton", "anton@gmail.com", 35)]
         public void CreateUser_ShouldReturnValidValues(string name, string email, int age)
         {
+            // Arrange
             var mockRepo = new Mock<IUserRepository>();
-            var testUser = new User(name, email, age, 0);
+            var expectedUser = new User(name, email, age, 0);
+
             mockRepo.Setup(repo => repo.Save(name, email, age))
-                    .Returns(testUser);
+                    .Returns(expectedUser);
 
             var service = new UserService(mockRepo.Object);
-            var result = service.CreateUser(name, email, age);
-            result.name.Should().Be(name);
-            result.email.Should().Be(email);
-            result.age.Should().Be(age);
+
+            // Act
+            var user = service.CreateUser(name, email, age);
+
+            // Assert
+            (name, email, age).Should().BeEquivalentTo((user.name, user.email, user.age));
+
             mockRepo.Verify(repo => repo.Save(name, email, age), Times.Once);
         }
 
         [Fact]
-        public void GetUserName_ShouldReturnUnknown()
+        public void GetUserName_ShouldReturnUnknown_WhenUserNotFound()
         {
+            // Arrange
             var mockRepo = new Mock<IUserRepository>();
+            mockRepo.Setup(repo => repo.GetById(It.IsAny<int>()))
+                    .Returns((User)null);   // явно возвращаем null
+
             var service = new UserService(mockRepo.Object);
-            service.GetUserName(1).Should().Be("Unknown");
-            mockRepo.Verify(repo => repo.GetById(1), Times.Once);
+
+            // Act
+            var result = service.GetUserName(99);
+
+            // Assert
+            result.Should().Be("Unknown");
+            mockRepo.Verify(repo => repo.GetById(99), Times.Once);
         }
     }
 }
